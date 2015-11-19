@@ -73,7 +73,7 @@ function onClientSelfVariableUpdateEvent(serverConnectionHandlerID, flag, oldVal
 	if nox.setting.antikick.server then
 		if flag == 1 then
 			nox.var.backup.nickname = newValue
-			ScriptLog("Backed Up: "..nox.var.backup.nickname)
+			-- ScriptLog("Backed Up: "..nox.var.backup.nickname)
 		end
 	end
 end
@@ -102,7 +102,7 @@ function onConnectStatusChangeEvent(serverConnectionHandlerID, status, errorNumb
 			local chid = ts3.getChannelOfClient(serverConnectionHandlerID, nox.var.backup.clid)
 			nox.var.backup.channelname = ts3.getChannelVariableAsString(serverConnectionHandlerID, chid, 0)
 			
-			ScriptLog("Backed up: "..nox.var.backup.ip.." | "..nox.var.backup.nickname.." | "..nox.var.backup.channelname.." #"..chid)
+			-- ScriptLog("Backed up: "..nox.var.backup.ip.." | "..nox.var.backup.nickname.." | "..nox.var.backup.channelname.." #"..chid)
 			
 			if nox.var.checkChannel_server == true then
 				if nox.var.backup.chid ~= chid then
