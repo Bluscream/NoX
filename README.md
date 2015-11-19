@@ -1,5 +1,5 @@
 # NoX
-No X Module for the Teamspeak³ Client
+No X Module for the Teamspeak³ Client ![Downloads](https://img.shields.io/github/downloads/NoX/NoX/total.svg)
 
 
 #Features
