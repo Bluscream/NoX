@@ -3,11 +3,11 @@ No X Module for the Teamspeak³ Client
 
 
 #Features
+
 Anti Channel-Ban
-
 Anti Channel Kick
-
 Anti Server Kick
+Recreate the channel you are currently in
 
 
 #Installation
