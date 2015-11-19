@@ -1,4 +1,6 @@
 # NoX
+
+[![Join the chat at https://gitter.im/Bluscream/NoX](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Bluscream/NoX?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 No X Module for the Teamspeak³ Client ![Downloads](https://img.shields.io/github/downloads/Bluscream/NoX/total.svg)
 
 
