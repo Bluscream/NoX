@@ -9,7 +9,7 @@ nox = {
 	},
 	setting = {
 		active = true,
-		debug = true,
+		debug = false,
 		failsave = false,
 		slowmode = true,
 		capture_profile = "",
@@ -17,10 +17,10 @@ nox = {
 		auto_slowmode = false,
 		IDPrefix = "New identity_",
 		AmountOfIDs = 508,
-		BanGroups = { 12, 16 }, 
-		SpamGroups = { 13, 14 },
+		BanGroups = { 0 }, 
+		SpamGroups = { 0 },
 		antikick = {
-			channel = false,
+			channel = true,
 			server = true,
 		},
 	},
