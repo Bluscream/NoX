@@ -11,3 +11,6 @@ Recreate the channel you are currently in
 
 #Installation
 Check the [Wiki](https://github.com/Bluscream/NoX/wiki) for a [tutorial](https://github.com/Bluscream/NoX/wiki/Installation-Tutorial) how to install and use this script.
+
+##To-Do
+Check the [issue tracker](https://github.com/Bluscream/NoX/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+%5BTo-do%5D) to see what's on my to-do list.
