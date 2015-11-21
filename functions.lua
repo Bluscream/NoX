@@ -40,7 +40,7 @@ function setID(serverConnectionHandlerID)
 		nox.func.checkForSwitch = true
 	else
 		if nox.setting.failsave == true then
-			nox.var.variables_Requested = "true"
+			nox.var.variables_Requested = true
 			ts3.requestServerVariables(serverConnectionHandlerID)
 			ScriptLog("[Flood] Requested Server Variables.")
 		else

@@ -64,9 +64,9 @@ function onClientKickFromServerEvent(serverConnectionHandlerID, clientID, oldCha
 	end
 end
 function onServerUpdatedEvent(serverConnectionHandlerID)
-	if nox.var.variables_Requested == "true" then
+	if nox.var.variables_Requested == true then
 		reJoin(serverConnectionHandlerID)
-		nox.var.variables_Requested = "false"
+		nox.var.variables_Requested = false
 	end
 end
 function onClientSelfVariableUpdateEvent(serverConnectionHandlerID, flag, oldValue, newValue)
