@@ -7,7 +7,6 @@ nox = {
 		ver = "1.1",
 		author = "CHRiiS,Bluscream",
 	},
-<<<<<<< HEAD
 	setting = { -- Edit below this line! --
 		active = true, -- Enable the script.
 		debug = false, -- The script show debug messages.
@@ -23,23 +22,6 @@ nox = {
 		antikick = {
 			channel = true, -- Auto rejoin when you get kicked from a channel.
 			server = true, -- Auto reconnect when you get kicked from the server.
-=======
-	setting = {
-		active = true,
-		debug = false,
-		failsave = false,
-		slowmode = true,
-		capture_profile = "",
-		channelswitch = true,
-		auto_slowmode = false,
-		IDPrefix = "New identity_",
-		AmountOfIDs = 508,
-		BanGroups = { 0 }, 
-		SpamGroups = { 0 },
-		antikick = {
-			channel = true,
-			server = true,
->>>>>>> origin/master
 		},
 	}, -- Edit above this line! --
 	var = {
