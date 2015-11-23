@@ -19,9 +19,22 @@ nox = {
 		AmountOfIDs = 508, -- The amount of Unique Identities you created for the Anti-Channel-Ban.
 		BanGroups = { 12, 16 }, -- Channel Group ID's that should be detected as "Channel-Ban" groups.
 		SpamGroups = { 13, 14 }, -- Channel Group ID's that should be detected as "Channel-Anti-Spam" groups.
+		antimove = true, -- Auto switch back when moved.
 		antikick = {
 			channel = true, -- Auto rejoin when you get kicked from a channel.
 			server = true, -- Auto reconnect when you get kicked from the server.
+		},
+		server = {
+			GommeHD = {
+				UID = "FI9+KF1c/BKx5dlFejAs8OJpnO0=",
+				BadChannelGroups = { 12, 13 },
+				BadServerGroups = { 13, 14 },
+			},
+			mtG = {
+				UID = "LpfWDi8tO9blye3wZXZZ76uPAM8=",
+				BadChannelGroups = { 12, 13 },
+				BadServerGroups = { 13, 12 },
+			},
 		},
 	}, -- Edit above this line! --
 	var = {

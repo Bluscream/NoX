@@ -22,6 +22,7 @@ local registeredEvents = {
 	onClientKickFromServerEvent = antiX_events.onClientKickFromServerEvent,
 	onClientKickFromChannelEvent = antiX_events.onClientKickFromChannelEvent,
 	onClientMoveEvent = antiX_events.onClientMoveEvent,
+	onClientMoveMovedEvent = antiX_events.onClientMoveMovedEvent,
 	onClientSelfVariableUpdateEvent = antiX_events.onClientSelfVariableUpdateEvent
 }
 ScriptLog("init.lua loaded...")

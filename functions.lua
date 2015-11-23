@@ -2,13 +2,17 @@ require("NoX/settings")
 function isempty(s)
   return s == nil or s == ''
 end
+
+
 function antix(serverConnectionHandlerID, arg, value)
 	if not isempty(arg) then
 		arg = string.lower(arg)
 	end
+	
 	if not isempty(value) then
 		value = string.lower(value)
 	end
+
 	if arg == "bc" then
 		if isempty(value) then
 			ts3.printMessageToCurrentTab("NoX: Ban count = "..nox.var.bancount)
@@ -21,6 +25,8 @@ function antix(serverConnectionHandlerID, arg, value)
 		end
 	end
 end
+
+
 function clock(serverConnectionHandlerID)
 	local x = os.clock()
 		ts3.printMessageToCurrentTab(x)
@@ -53,9 +59,6 @@ function setID(serverConnectionHandlerID)
 	end
 end
 function reJoin(serverConnectionHandlerID, mode)
-	-- if not isempty(mode) then
-		-- mode = string.lower(mode)
-	-- end
 	local clientIDown = ts3.getClientID(serverConnectionHandlerID)
 	local ip = ts3.getConnectionVariableAsString(serverConnectionHandlerID, clientIDown, 6)
 	local port = ts3.getConnectionVariableAsUInt64(serverConnectionHandlerID, clientIDown, 7)
@@ -103,21 +106,18 @@ function reJoin(serverConnectionHandlerID, mode)
 		end
 	end
 end
-function reConnect(serverConnectionHandlerID, mode)
-	-- if not isempty(mode) then
-		-- mode = string.lower(mode)
-	-- end
-	setID(serverConnectionHandlerID)
+function reConnect(serverConnectionHandlerID)
+	var_i = math.random(0,nox.setting.AmountOfIDs)
+	if var_i == nox.var.lastID then
+		var_i = math.random(0,nox.setting.AmountOfIDs)
+		return
+	end
 	local clientIDown = ts3.getClientID(serverConnectionHandlerID)
 	local channelIDown = ts3.getChannelOfClient(serverConnectionHandlerID, clientIDown)
 	KickedChannelID = channelIDown
 	KickedChannelNAME = ts3.getChannelVariableAsString(serverConnectionHandlerID, channelIDown, 0)
 	ScriptLog("Triggered manual rejoin in channel \"".. KickedChannelNAME .."\" #"..KickedChannelID)
-	if not isempty(mode) then
-		reJoin(serverConnectionHandlerID, mode)
-	else
-		reJoin(serverConnectionHandlerID)
-	end
+	reJoin(serverConnectionHandlerID)
 end
 local function resetChannelVARS(serverConnectionHandlerID)
 	backup_channelName = nil
