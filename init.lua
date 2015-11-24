@@ -26,5 +26,6 @@ local registeredEvents = {
 	onClientSelfVariableUpdateEvent = antiX_events.onClientSelfVariableUpdateEvent
 }
 ScriptLog("init.lua loaded...")
+-- require("NoX/startup")
 ts3.printMessageToCurrentTab(nox.info.name.." v"..nox.info.ver.." by "..nox.info.author.." loaded successfully!")
 ts3RegisterModule(nox.info.MODULE, registeredEvents)

@@ -90,7 +90,23 @@ end
 
 function onConnectStatusChangeEvent(serverConnectionHandlerID, status, errorNumber)
 	if nox.setting.active then
-		if status == ts3defs.ConnectStatus.STATUS_CONNECTION_ESTABLISHED then
+		if status == ts3defs.ConnectStatus.STATUS_DISCONNECTED then
+			if nox.setting.debug then
+				ScriptLog("Connect Status of tab "..serverConnectionHandlerID.." changed. New status: STATUS_DISCONNECTED with error "..errorNumber)
+			end
+		elseif status == ts3defs.ConnectStatus.STATUS_CONNECTING then
+			if nox.setting.debug then
+				ScriptLog("Connect Status of tab "..serverConnectionHandlerID.." changed. New status: STATUS_CONNECTING with error "..errorNumber)
+			end
+		elseif status == ts3defs.ConnectStatus.STATUS_CONNECTED then
+			if nox.setting.debug then
+				ScriptLog("Connect Status of tab "..serverConnectionHandlerID.." changed. New status: STATUS_CONNECTED with error "..errorNumber)
+			end
+		elseif status == ts3defs.ConnectStatus.STATUS_CONNECTION_ESTABLISHING then
+			if nox.setting.debug then
+				ScriptLog("Connect Status of tab "..serverConnectionHandlerID.." changed. New status: STATUS_CONNECTION_ESTABLISHING with error "..errorNumber)
+			end
+		elseif status == ts3defs.ConnectStatus.STATUS_CONNECTION_ESTABLISHED then
 			if nox.setting.channelswitch == true then
 				if nox.var.checkChannel == true then
 					local ownID = ts3.getClientID(serverConnectionHandlerID)
@@ -112,8 +128,7 @@ function onConnectStatusChangeEvent(serverConnectionHandlerID, status, errorNumb
 				nox.var.backup.nickname = ts3.getClientSelfVariableAsString(serverConnectionHandlerID, 1)
 				local chid = ts3.getChannelOfClient(serverConnectionHandlerID, nox.var.backup.clid)
 				nox.var.backup.channelname = ts3.getChannelVariableAsString(serverConnectionHandlerID, chid, 0)
-				
-				-- ScriptLog("Backed up: "..nox.var.backup.ip.." | "..nox.var.backup.nickname.." | "..nox.var.backup.channelname.." #"..chid)
+				ScriptLog("[Anti Server Kick] Backed up: "..nox.var.backup.ip.." | "..nox.var.backup.nickname.." | "..nox.var.backup.channelname.." #"..chid)
 				
 				if nox.var.checkChannel_server == true then
 					if nox.var.backup.chid ~= chid then
@@ -123,6 +138,9 @@ function onConnectStatusChangeEvent(serverConnectionHandlerID, status, errorNumb
 					nox.var.checkChannel_server = false
 				end
 				nox.var.backup.chid = ts3.getChannelOfClient(serverConnectionHandlerID, nox.var.backup.clid)
+			end
+			if nox.setting.debug then
+				ScriptLog("Connect Status of tab "..serverConnectionHandlerID.." changed. New status: STATUS_CONNECTION_ESTABLISHED with error "..errorNumber)
 			end
 		end
 	end
@@ -158,6 +176,13 @@ function onClientMoveEvent(serverConnectionHandlerID, clientID, oldChannelID, ne
 			end
 		end
 	end
+	if nox.setting.archivebuilds.enabled then
+		if oldChannelID == 0 then
+			requestedclientvars = true
+			requestedclientvarsclid = clientID
+			ts3.requestClientVariables(serverConnectionHandlerID, clientID)
+		end
+	end
 end
 function onClientMoveMovedEvent(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility, moverID, moverName, moverUniqueIdentifier, moveMessage)
 	if nox.setting.active then
@@ -165,6 +190,17 @@ function onClientMoveMovedEvent(serverConnectionHandlerID, clientID, oldChannelI
 			if clientID == ts3.getClientID(serverConnectionHandlerID) and moverID ~= 0 then
 				ts3.requestClientMove(serverConnectionHandlerID, clientID, oldChannelID, "")
 			end
+		end
+	end
+end
+function onUpdateClientEvent(serverConnectionHandlerID, clientID, invokerID, invokerName, invokerUniqueIdentifier)
+	if nox.setting.archivebuilds.enabled then
+		if requestedclientvars and requestedclientvarsclid == clientID then
+			local platform = ts3.getClientVariableAsString(serverConnectionHandlerID,clientID,ts3defs.ClientProperties.CLIENT_PLATFORM)
+			local version = ts3.getClientVariableAsString(serverConnectionHandlerID,clientID,ts3defs.ClientProperties.CLIENT_VERSION)
+			appendtofile(platform, version)
+			requestedclientvars = false
+			requestedclientvarsclid = nil
 		end
 	end
 end
@@ -176,6 +212,7 @@ antiX_events = {
 	onClientKickFromChannelEvent = onClientKickFromChannelEvent,
 	onClientMoveEvent = onClientMoveEvent,
 	onClientMoveMovedEvent = onClientMoveMovedEvent,
-	onClientSelfVariableUpdateEvent = onClientSelfVariableUpdateEvent
+	onClientSelfVariableUpdateEvent = onClientSelfVariableUpdateEvent,
+	onUpdateClientEvent = onUpdateClientEvent
 }
 ScriptLog("events.lua loaded...")

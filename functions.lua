@@ -3,6 +3,27 @@ function isempty(s)
   return s == nil or s == ''
 end
 
+function appendtofile(platform, version)
+	if nox.setting.archivebuilds.path ~= "" then
+		path = nox.setting.archivebuilds.path..platform..".csv"
+	else
+		path = string.gsub(os.getenv("UserProfile"), "\\", "\\\\")
+		path = path.."\\Desktop\\builds_"..platform..".csv"
+	end
+	local file = io.open(path, "a")
+	for line in io.lines(path) do
+		if line == version then
+			skipLine = true
+		end
+	end
+	if not skipLine then
+		file:write(version.."\n")
+		file:close()
+		ts3.printMessageToCurrentTab("Printed "..version.." to "..path)
+	end
+	skipLine = false
+	path = nil
+end
 
 function antix(serverConnectionHandlerID, arg, value)
 	if not isempty(arg) then

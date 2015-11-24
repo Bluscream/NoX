@@ -10,11 +10,15 @@ nox = {
 	setting = { -- Edit below this line! --
 		active = true, -- Enable the script.
 		debug = false, -- The script show debug messages.
+		archivebuilds = {
+			enabled = false, -- will create files that contain all client versions that you have ever seen.
+			path = "D:\\Coding\\Projekte\\Teamspeak-Plugins\\builds\\client\\unsorted\\",
+		},
 		failsave = false, -- If the antichannelban is not working as intended set this to true and try again.
-		slowmode = false, -- If this is enabled the script will not instantly reconnect when you get a channel ban group, only after you also got kicked. (Enable only this or auto_slowmode)
+		slowmode = true, -- If this is enabled the script will not instantly reconnect when you get a channel ban group, only after you also got kicked. (Enable only this or auto_slowmode)
 		capture_profile = "", -- You can reconnect with a non-default Capture Profile when channel banned, usefull for screaming.
 		channelswitch = true, -- Checks if the client is really in the channel where it got banned from and if not auto-switchs to that channel.
-		auto_slowmode = true, -- A Timer based detection if you reconnected to much in a to short time. [BETA] (Enable only this or auto_slowmode)
+		auto_slowmode = false, -- A Timer based detection if you reconnected to much in a to short time. [BETA] (Enable only this or auto_slowmode)
 		IDPrefix = "New identity_", -- The Prefix of created UID's. For example in german its "Neue Identität_".
 		AmountOfIDs = 508, -- The amount of Unique Identities you created for the Anti-Channel-Ban.
 		BanGroups = { 12, 16 }, -- Channel Group ID's that should be detected as "Channel-Ban" groups.
