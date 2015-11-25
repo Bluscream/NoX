@@ -24,27 +24,31 @@ nox = {
 		BanGroups = { 12, 16 }, -- Channel Group ID's that should be detected as "Channel-Ban" groups.
 		SpamGroups = { 13, 14 }, -- Channel Group ID's that should be detected as "Channel-Anti-Spam" groups.
 		antimove = true, -- Auto switch back when moved.
-		script = "java -jar D:\\Downloaders\\JDownloader\\JDownloader.jar -r", -- Program to execute to get a new IP
-		scripttime = 13, -- The time in seconds that the reconnect script needs to get you a new IP.
 		antikick = {
 			channel = true, -- Auto rejoin when you get kicked from a channel.
-			server = true, -- Auto reconnect when you get kicked from the server.
+			server = {
+				enabled = true, -- Auto reconnect when you get kicked from the server.
+				script = "java -jar D:\\Downloaders\\JDownloader\\JDownloader.jar -r", -- Program to execute to get a new IP
+				scripttime = 13, -- The time in seconds that the reconnect script needs to get you a new IP.
+			},
 		},
 		antiban = {
-			channel = true, -- Auto rejoin when you get banned from a channel.
+			channel = {
+				enabled = true, -- Auto rejoin when you get banned from a channel.
+				server = {
+					GommeHD = {
+						UID = "FI9+KF1c/BKx5dlFejAs8OJpnO0=",
+						BadChannelGroups = { 12, 13 },
+						BadServerGroups = { 13, 14 },
+					},
+					mtG = {
+						UID = "LpfWDi8tO9blye3wZXZZ76uPAM8=",
+						BadChannelGroups = { 12, 13 },
+						BadServerGroups = { 13, 12 },
+					},
+				},
+			},
 			server = true, -- Auto reconnect when you get banned from a server.
-		},
-		server = {
-			GommeHD = {
-				UID = "FI9+KF1c/BKx5dlFejAs8OJpnO0=",
-				BadChannelGroups = { 12, 13 },
-				BadServerGroups = { 13, 14 },
-			},
-			mtG = {
-				UID = "LpfWDi8tO9blye3wZXZZ76uPAM8=",
-				BadChannelGroups = { 12, 13 },
-				BadServerGroups = { 13, 12 },
-			},
 		},
 	}, -- Edit above this line! --
 	var = {

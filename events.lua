@@ -25,7 +25,7 @@ function onClientChannelGroupChangedEvent(serverConnectionHandlerID, channelGrou
 end
 function onClientKickFromChannelEvent(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility, kickerID, kickerName, kickerUniqueIdentifier, kickMessage)
 	if nox.setting.active then
-		if nox.setting.antikick.server or nox.setting.antiban.server then
+		if nox.setting.antikick.server.enabled or nox.setting.antiban.server.enabled then
 			if clientID == ts3.getClientID(serverConnectionHandlerID) then
 				nox.var.backup.chid = newChannelID
 				nox.var.backup.channelname = ts3.getChannelVariableAsString(serverConnectionHandlerID, newChannelID, 0)
@@ -53,8 +53,7 @@ function onClientKickFromChannelEvent(serverConnectionHandlerID, clientID, oldCh
 	end
 end
 function onClientKickFromServerEvent(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility, kickerID, kickerName, kickerUniqueIdentifier, kickMessage)
-	if nox.setting.active and nox.setting.antikick.server then
-		-- nox.var.checkForServerKick = true
+	if nox.setting.active and nox.setting.antikick.server.enabled then
 		if clientID == nox.var.backup.clid then
 			if not isempty(nox.var.backup.channelname) and not string.find(nox.var.backup.channelname, "/") then
 				local channelname = string.gsub(nox.var.backup.channelname, '%/', '%\\/')
@@ -70,7 +69,7 @@ function onClientKickFromServerEvent(serverConnectionHandlerID, clientID, oldCha
 	end
 end
 function onClientBanFromServerEvent(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility, kickerID, kickerName, kickerUniqueIdentifier, kickTime, kickMessage)
-	if nox.setting.active and nox.setting.antiban.server then
+	if nox.setting.active and nox.setting.antiban.server.enabled then
 		if clientID == nox.var.backup.clid then
 			os.execute(nox.setting.script)
 			sleep(nox.setting.scripttime)
@@ -114,7 +113,7 @@ function onServerUpdatedEvent(serverConnectionHandlerID)
 end
 function onClientSelfVariableUpdateEvent(serverConnectionHandlerID, flag, oldValue, newValue)
 	if nox.setting.active then
-		if nox.setting.antikick.server then
+		if nox.setting.antikick.server.enabled or nox.setting.antiban.server then
 			if flag == 1 then
 				nox.var.backup.nickname = newValue
 				-- ScriptLog("Backed Up: "..nox.var.backup.nickname)
@@ -128,7 +127,7 @@ function onConnectStatusChangeEvent(serverConnectionHandlerID, status, errorNumb
 		if status == ts3defs.ConnectStatus.STATUS_DISCONNECTED then
 		elseif status == ts3defs.ConnectStatus.STATUS_CONNECTING then
 		elseif status == ts3defs.ConnectStatus.STATUS_CONNECTED then
-			if nox.setting.antikick.server then
+			if nox.setting.antikick.server.enabled then
 				nox.var.backup.clid = ts3.getClientID(serverConnectionHandlerID)
 				local ip = ts3.getConnectionVariableAsString(serverConnectionHandlerID, nox.var.backup.clid, 6)
 				local port = ts3.getConnectionVariableAsUInt64(serverConnectionHandlerID, nox.var.backup.clid, 7)
@@ -150,7 +149,7 @@ function onConnectStatusChangeEvent(serverConnectionHandlerID, status, errorNumb
 					nox.var.checkChannel = false
 				end
 			end
-			if nox.setting.antikick.server then
+			if nox.setting.antikick.server.enabled then
 				
 				local chid = ts3.getChannelOfClient(serverConnectionHandlerID, nox.var.backup.clid)
 				nox.var.backup.channelname = ts3.getChannelVariableAsString(serverConnectionHandlerID, chid, 0)
@@ -170,7 +169,7 @@ function onConnectStatusChangeEvent(serverConnectionHandlerID, status, errorNumb
 end
 function onClientMoveEvent(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility, moveMessage)
 	if nox.setting.active then
-		if nox.setting.antikick.server then
+		if nox.setting.antikick.server.enabled then
 			if clientID == ts3.getClientID(serverConnectionHandlerID) then
 				nox.var.backup.chid = newChannelID
 				nox.var.backup.channelname = ts3.getChannelVariableAsString(serverConnectionHandlerID, newChannelID, 0)
