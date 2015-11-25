@@ -3,9 +3,10 @@ No X Module for the Teamspeak³ Client ![Downloads](https://img.shields.io/githu
 
 
 ##Features
+Anti Server-Ban,
+Anti Server Kick,
 Anti Channel-Ban,
 Anti Channel Kick,
-Anti Server Kick,
 Recreate the channel you are currently in
 
 
