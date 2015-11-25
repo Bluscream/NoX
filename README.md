@@ -1,6 +1,6 @@
 # NoX
 No X Module for the Teamspeak³ Client ![Downloads](https://img.shields.io/github/downloads/Bluscream/NoX/total.svg)
-![Analytics](https://ga-beacon.appspot.com/UA-70678518-1/NoX/readme)](https://github.com/igrigorik/ga-beacon)
+![Analytics](https://ga-beacon.appspot.com/UA-70678518-1/NoX/readme)
 ![Unbannable](https://img.shields.io/badge/Unbannable-100%25-red.svg)
 ![Join the chat at https://gitter.im/Bluscream/NoX](https://badges.gitter.im/Join%20Chat.svg?style=plastic)](https://gitter.im/Bluscream/NoX?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
