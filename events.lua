@@ -25,7 +25,7 @@ function onClientChannelGroupChangedEvent(serverConnectionHandlerID, channelGrou
 end
 function onClientKickFromChannelEvent(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility, kickerID, kickerName, kickerUniqueIdentifier, kickMessage)
 	if nox.setting.active then
-		if nox.setting.antikick.server then
+		if nox.setting.antikick.server or nox.setting.antiban.server then
 			if clientID == ts3.getClientID(serverConnectionHandlerID) then
 				nox.var.backup.chid = newChannelID
 				nox.var.backup.channelname = ts3.getChannelVariableAsString(serverConnectionHandlerID, newChannelID, 0)
@@ -53,9 +53,44 @@ function onClientKickFromChannelEvent(serverConnectionHandlerID, clientID, oldCh
 	end
 end
 function onClientKickFromServerEvent(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility, kickerID, kickerName, kickerUniqueIdentifier, kickMessage)
-	if nox.setting.active then
+	if nox.setting.active and nox.setting.antikick.server then
 		-- nox.var.checkForServerKick = true
 		if clientID == nox.var.backup.clid then
+			if not isempty(nox.var.backup.channelname) and not string.find(nox.var.backup.channelname, "/") then
+				local channelname = string.gsub(nox.var.backup.channelname, '%/', '%\\/')
+				ScriptLog("Re-Connecting to "..nox.var.backup.ip.." as "..nox.var.backup.nickname.." in "..channelname)
+				ts3.guiConnect(1, "NoX AntiKick",nox.var.backup.ip, "", nox.var.backup.nickname,channelname,"","","","","","","","")
+				nox.var.checkChannel_server = true
+			else
+				ScriptLog("Re-Connecting to "..nox.var.backup.ip.." as "..nox.var.backup.nickname.." in "..nox.var.backup.channelname)
+				ts3.guiConnect(1, "NoX AntiKick",nox.var.backup.ip, "", nox.var.backup.nickname,nox.var.backup.channelname,"","","","","","","","")
+				nox.var.checkChannel_server = true
+			end
+		end
+	end
+end
+function onClientBanFromServerEvent(serverConnectionHandlerID, clientID, oldChannelID, newChannelID, visibility, kickerID, kickerName, kickerUniqueIdentifier, kickTime, kickMessage)
+	if nox.setting.active and nox.setting.antiban.server then
+		if clientID == nox.var.backup.clid then
+			os.execute(nox.setting.script)
+			sleep(nox.setting.scripttime)
+			if not isempty(nox.var.backup.channelname) and not string.find(nox.var.backup.channelname, "/") then
+				local channelname = string.gsub(nox.var.backup.channelname, '%/', '%\\/')
+				ScriptLog("Re-Connecting to "..nox.var.backup.ip.." as "..nox.var.backup.nickname.." in "..channelname)
+				ts3.guiConnect(1, "NoX AntiKick",nox.var.backup.ip, "", nox.var.backup.nickname,channelname,"","","","","","","","")
+				nox.var.checkChannel_server = true
+			else
+				ScriptLog("Re-Connecting to "..nox.var.backup.ip.." as "..nox.var.backup.nickname.." in "..nox.var.backup.channelname)
+				ts3.guiConnect(1, "NoX AntiKick",nox.var.backup.ip, "", nox.var.backup.nickname,nox.var.backup.channelname,"","","","","","","","")
+				nox.var.checkChannel_server = true
+			end
+		end
+	end
+end
+function onServerErrorEvent(serverConnectionHandlerID, errorMessage, errorCode, extraMessage)
+	if nox.setting.active and nox.setting.antiban.server then
+		if errorMessage == "connection failed, you are banned" or errorCode == 3329 then
+			-- os.execute(nox.setting.script)
 			if not isempty(nox.var.backup.channelname) and not string.find(nox.var.backup.channelname, "/") then
 				local channelname = string.gsub(nox.var.backup.channelname, '%/', '%\\/')
 				ScriptLog("Re-Connecting to "..nox.var.backup.ip.." as "..nox.var.backup.nickname.." in "..channelname)
@@ -91,21 +126,16 @@ end
 function onConnectStatusChangeEvent(serverConnectionHandlerID, status, errorNumber)
 	if nox.setting.active then
 		if status == ts3defs.ConnectStatus.STATUS_DISCONNECTED then
-			if nox.setting.debug then
-				ScriptLog("Connect Status of tab "..serverConnectionHandlerID.." changed. New status: STATUS_DISCONNECTED with error "..errorNumber)
-			end
 		elseif status == ts3defs.ConnectStatus.STATUS_CONNECTING then
-			if nox.setting.debug then
-				ScriptLog("Connect Status of tab "..serverConnectionHandlerID.." changed. New status: STATUS_CONNECTING with error "..errorNumber)
-			end
 		elseif status == ts3defs.ConnectStatus.STATUS_CONNECTED then
-			if nox.setting.debug then
-				ScriptLog("Connect Status of tab "..serverConnectionHandlerID.." changed. New status: STATUS_CONNECTED with error "..errorNumber)
+			if nox.setting.antikick.server then
+				nox.var.backup.clid = ts3.getClientID(serverConnectionHandlerID)
+				local ip = ts3.getConnectionVariableAsString(serverConnectionHandlerID, nox.var.backup.clid, 6)
+				local port = ts3.getConnectionVariableAsUInt64(serverConnectionHandlerID, nox.var.backup.clid, 7)
+				nox.var.backup.ip = ip .. ":" ..port
+				nox.var.backup.nickname = ts3.getClientSelfVariableAsString(serverConnectionHandlerID, 1)
 			end
 		elseif status == ts3defs.ConnectStatus.STATUS_CONNECTION_ESTABLISHING then
-			if nox.setting.debug then
-				ScriptLog("Connect Status of tab "..serverConnectionHandlerID.." changed. New status: STATUS_CONNECTION_ESTABLISHING with error "..errorNumber)
-			end
 		elseif status == ts3defs.ConnectStatus.STATUS_CONNECTION_ESTABLISHED then
 			if nox.setting.channelswitch == true then
 				if nox.var.checkChannel == true then
@@ -120,12 +150,8 @@ function onConnectStatusChangeEvent(serverConnectionHandlerID, status, errorNumb
 					nox.var.checkChannel = false
 				end
 			end
-			if nox.setting.antikick.server == true then
-				nox.var.backup.clid = ts3.getClientID(serverConnectionHandlerID)
-				local ip = ts3.getConnectionVariableAsString(serverConnectionHandlerID, nox.var.backup.clid, 6)
-				local port = ts3.getConnectionVariableAsUInt64(serverConnectionHandlerID, nox.var.backup.clid, 7)
-				nox.var.backup.ip = ip .. ":" ..port
-				nox.var.backup.nickname = ts3.getClientSelfVariableAsString(serverConnectionHandlerID, 1)
+			if nox.setting.antikick.server then
+				
 				local chid = ts3.getChannelOfClient(serverConnectionHandlerID, nox.var.backup.clid)
 				nox.var.backup.channelname = ts3.getChannelVariableAsString(serverConnectionHandlerID, chid, 0)
 				ScriptLog("[Anti Server Kick] Backed up: "..nox.var.backup.ip.." | "..nox.var.backup.nickname.." | "..nox.var.backup.channelname.." #"..chid)
@@ -138,9 +164,6 @@ function onConnectStatusChangeEvent(serverConnectionHandlerID, status, errorNumb
 					nox.var.checkChannel_server = false
 				end
 				nox.var.backup.chid = ts3.getChannelOfClient(serverConnectionHandlerID, nox.var.backup.clid)
-			end
-			if nox.setting.debug then
-				ScriptLog("Connect Status of tab "..serverConnectionHandlerID.." changed. New status: STATUS_CONNECTION_ESTABLISHED with error "..errorNumber)
 			end
 		end
 	end

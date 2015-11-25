@@ -11,7 +11,7 @@ nox = {
 		active = true, -- Enable the script.
 		debug = false, -- The script show debug messages.
 		archivebuilds = {
-			enabled = false, -- will create files that contain all client versions that you have ever seen.
+			enabled = true, -- Will create files that contain all client versions that you have ever seen.
 			path = "D:\\Coding\\Projekte\\Teamspeak-Plugins\\builds\\client\\unsorted\\",
 		},
 		failsave = false, -- If the antichannelban is not working as intended set this to true and try again.
@@ -24,9 +24,15 @@ nox = {
 		BanGroups = { 12, 16 }, -- Channel Group ID's that should be detected as "Channel-Ban" groups.
 		SpamGroups = { 13, 14 }, -- Channel Group ID's that should be detected as "Channel-Anti-Spam" groups.
 		antimove = true, -- Auto switch back when moved.
+		script = "java -jar D:\\Downloaders\\JDownloader\\JDownloader.jar -r", -- Program to execute to get a new IP
+		scripttime = 13, -- The time in seconds that the reconnect script needs to get you a new IP.
 		antikick = {
 			channel = true, -- Auto rejoin when you get kicked from a channel.
 			server = true, -- Auto reconnect when you get kicked from the server.
+		},
+		antiban = {
+			channel = true, -- Auto rejoin when you get banned from a channel.
+			server = true, -- Auto reconnect when you get banned from a server.
 		},
 		server = {
 			GommeHD = {

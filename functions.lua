@@ -25,6 +25,11 @@ function appendtofile(platform, version)
 	path = nil
 end
 
+function sleep(s)
+  local ntime = os.time() + s
+  repeat until os.time() > ntime
+end
+
 function antix(serverConnectionHandlerID, arg, value)
 	if not isempty(arg) then
 		arg = string.lower(arg)
