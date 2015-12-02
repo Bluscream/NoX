@@ -17,6 +17,12 @@ function appendtofile(platform, version)
 		end
 	end
 	if not skipLine then
+		-- local build = string.gsub(version, " ^\\[Build:", ",")
+		-- local str = string.gsub(str, "%s", ",")
+		-- os.date("%x", build)
+		-- ts3.printMessageToCurrentTab(str)
+		-- local build = tonumber(string.match(version, "%d+"))
+		-- file:write(build..","..version..","..bd..","..bt..",?,?,\n")
 		file:write(version.."\n")
 		file:close()
 		ts3.printMessageToCurrentTab("Printed "..version.." to "..path)

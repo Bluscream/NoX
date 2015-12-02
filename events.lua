@@ -220,7 +220,11 @@ function onUpdateClientEvent(serverConnectionHandlerID, clientID, invokerID, inv
 		if requestedclientvars and requestedclientvarsclid == clientID then
 			local platform = ts3.getClientVariableAsString(serverConnectionHandlerID,clientID,ts3defs.ClientProperties.CLIENT_PLATFORM)
 			local version = ts3.getClientVariableAsString(serverConnectionHandlerID,clientID,ts3defs.ClientProperties.CLIENT_VERSION)
-			appendtofile(platform, version)
+			if platform == "Windows" or platform == "Linux" or platform == "OS X" then
+				appendtofile("Desktop", version)
+			else
+				appendtofile(platform, version)
+			end
 			requestedclientvars = false
 			requestedclientvarsclid = nil
 		end
