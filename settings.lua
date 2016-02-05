@@ -9,10 +9,14 @@ nox = {
 	},
 	setting = { -- Edit below this line! --
 		active = true, -- Enable the script.
-		debug = false, -- The script show debug messages.
+		debug = true, -- The script show debug messages.
 		archivebuilds = {
 			enabled = true, -- Will create files that contain all client versions that you have ever seen.
 			path = "D:\\Coding\\Projekte\\Teamspeak-Plugins\\builds\\client\\unsorted\\",
+		},
+		password = {
+			server = "123",
+			channel = "123",
 		},
 		failsave = false, -- If the antichannelban is not working as intended set this to true and try again.
 		slowmode = true, -- If this is enabled the script will not instantly reconnect when you get a channel ban group, only after you also got kicked. (Enable only this or auto_slowmode)
@@ -23,7 +27,13 @@ nox = {
 		AmountOfIDs = 508, -- The amount of Unique Identities you created for the Anti-Channel-Ban.
 		BanGroups = { 12, 16 }, -- Channel Group ID's that should be detected as "Channel-Ban" groups.
 		SpamGroups = { 13, 14 }, -- Channel Group ID's that should be detected as "Channel-Anti-Spam" groups.
-		antimove = true, -- Auto switch back when moved.
+		antimove = {
+			enabled = true, -- Auto switch back when moved.
+			filter = {
+				enabled = true,
+				uids = { 'serveradmin', 'serverquery' },
+			}
+		},
 		antikick = {
 			channel = true, -- Auto rejoin when you get kicked from a channel.
 			server = {

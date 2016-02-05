@@ -31,6 +31,24 @@ function appendtofile(platform, version)
 	path = nil
 end
 
+function getPlatform()
+	if os.getenv("APPDATA") then
+		if os.getenv("HOME") then
+			return "cygwin";
+		else
+			return "windows";
+		end
+	elseif os.getenv("HOME") then
+		return "unix";
+	else
+		return "unknown";
+	end
+end
+
+function platform()
+	ts3.printMessageToCurrentTab(getPlatform());
+end
+
 function sleep(s)
   local ntime = os.time() + s
   repeat until os.time() > ntime
