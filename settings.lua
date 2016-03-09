@@ -12,27 +12,31 @@ nox = {
 		debug = true, -- The script show debug messages.
 		archivebuilds = {
 			enabled = true, -- Will create files that contain all client versions that you have ever seen.
-			path = "D:\\Coding\\Projekte\\Teamspeak-Plugins\\builds\\client\\unsorted\\",
+			path = "D:\\Coding\\Projekte\\Teamspeak-Plugins\\builds",
 		},
 		password = {
 			server = "123",
 			channel = "123",
 		},
+		ownchat = true, -- Opens a chat with yourself as notepad.
 		failsave = false, -- If the antichannelban is not working as intended set this to true and try again.
 		slowmode = true, -- If this is enabled the script will not instantly reconnect when you get a channel ban group, only after you also got kicked. (Enable only this or auto_slowmode)
 		capture_profile = "", -- You can reconnect with a non-default Capture Profile when channel banned, usefull for screaming.
-		channelswitch = true, -- Checks if the client is really in the channel where it got banned from and if not auto-switchs to that channel.
+		channelswitch = false, -- Checks if the client is really in the channel where it got banned from and if not auto-switchs to that channel.
 		auto_slowmode = false, -- A Timer based detection if you reconnected to much in a to short time. [BETA] (Enable only this or auto_slowmode)
 		IDPrefix = "New identity_", -- The Prefix of created UID's. For example in german its "Neue Identität_".
-		AmountOfIDs = 508, -- The amount of Unique Identities you created for the Anti-Channel-Ban.
-		BanGroups = { 12, 16 }, -- Channel Group ID's that should be detected as "Channel-Ban" groups.
+		use_all_ids = false, -- If true, uses all IDs that you have, even your default one. If false, only the ones starting with "IDPrefix" will be used.
+		BanGroups = { 12, 16, 11 }, -- Channel Group ID's that should be detected as "Channel-Ban" groups.
 		SpamGroups = { 13, 14 }, -- Channel Group ID's that should be detected as "Channel-Anti-Spam" groups.
 		antimove = {
-			enabled = true, -- Auto switch back when moved.
+			enabled = false, -- Auto switch back when moved.
 			filter = {
 				enabled = true,
 				uids = { 'serveradmin', 'serverquery' },
-			}
+			},
+		},
+		antidelete = {
+			channel = true,
 		},
 		antikick = {
 			channel = true, -- Auto rejoin when you get kicked from a channel.

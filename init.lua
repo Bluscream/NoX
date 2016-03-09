@@ -14,6 +14,7 @@ if nox.setting.active == false then
 	return
 end
 require("NoX/functions")
+getIDList()
 require("NoX/events")
 local registeredEvents = {
 	onClientChannelGroupChangedEvent = antiX_events.onClientChannelGroupChangedEvent,

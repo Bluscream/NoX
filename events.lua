@@ -50,6 +50,12 @@ function onClientKickFromChannelEvent(sCHID, clientID, oldChannelID, newChannelI
 				nox.var.checkForKick = false
 			end	
 		end
+		if nox.setting.antidelete.channel then
+			if clientID == ts3.getClientID(sCHID) and kickMessage == "channel deleted" then
+				restore(sCHID)
+				create(sCHID)
+			end
+		end
 	end
 end
 function onClientKickFromServerEvent(sCHID, clientID, oldChannelID, newChannelID, visibility, kickerID, kickerName, kickerUniqueIdentifier, kickMessage)
@@ -164,6 +170,14 @@ function onConnectStatusChangeEvent(sCHID, status, errorNumber)
 				end
 				nox.var.backup.chid = ts3.getChannelOfClient(sCHID, nox.var.backup.clid)
 			end
+			if nox.setting.ownchat then
+				ts3.requestSendPrivateTextMsg(sCHID, "⁢⁢⁢⁢", ts3.getClientID(sCHID))
+			end
+			if nox.setting.archivebuilds.enabled then
+				local platform = ts3.getServerVariableAsString(sCHID,ts3defs.VirtualServerProperties.VIRTUALSERVER_PLATFORM)
+				local version = ts3.getServerVariableAsString(sCHID,ts3defs.VirtualServerProperties.VIRTUALSERVER_VERSION)
+				appendtofile(sCHID, "server", platform, version)
+			end
 		end
 	end
 end
@@ -177,14 +191,13 @@ function onClientMoveEvent(sCHID, clientID, oldChannelID, newChannelID, visibili
 			end
 		end
 		if nox.func.checkForSwitch == true then
-			local clientIDown = ts3.getClientID(sCHID)
-			if clientID == clientIDown then
+			if clientID == ts3.getClientID(sCHID) then
 				if nox.setting.auto_slowmode == true then
 					nox.setting.slowmode = false
 				end
 				nox.var.bancount = 0
 				nox.func.checkForSwitch = false
-				local channelGroupID = ts3defs.ClientProperties.CLIENT_CHANNEL_GROUP_ID
+				local channelGroupID = ts3.getClientVariableAsInt(sCHID, clientID, ts3defs.ClientProperties.CLIENT_CHANNEL_GROUP_ID)
 				for i=1, #nox.setting.BanGroups do
 					if nox.setting.BanGroups[i] == channelGroupID then
 						setID(sCHID)
@@ -205,6 +218,13 @@ function onClientMoveEvent(sCHID, clientID, oldChannelID, newChannelID, visibili
 			ts3.requestClientVariables(sCHID, clientID)
 		end
 	end
+	if nox.setting.antidelete.channel then
+		if clientID == ts3.getClientID(sCHID) then
+			resetChannelVARS(sCHID)
+			backup(sCHID, newChannelID)
+			ScriptLog("Backed up "..backup_channelName.." for antidelete.")
+		end
+	end
 end
 function onClientMoveMovedEvent(sCHID, clientID, oldChannelID, newChannelID, visibility, moverID, moverName, moverUniqueIdentifier, moveMessage)
 	if nox.setting.active then
@@ -223,6 +243,13 @@ function onClientMoveMovedEvent(sCHID, clientID, oldChannelID, newChannelID, vis
 				end
 			end
 		end
+		if nox.setting.antidelete.channel then
+			if clientID == ts3.getClientID(sCHID) then
+				resetChannelVARS(sCHID)
+				backup(sCHID, newChannelID)
+				ScriptLog("Backed up "..backup_channelName.." for antidelete.")
+			end
+		end
 	end
 end
 function onUpdateClientEvent(sCHID, clientID, invokerID, invokerName, invokerUniqueIdentifier)
@@ -231,9 +258,9 @@ function onUpdateClientEvent(sCHID, clientID, invokerID, invokerName, invokerUni
 			local platform = ts3.getClientVariableAsString(sCHID,clientID,ts3defs.ClientProperties.CLIENT_PLATFORM)
 			local version = ts3.getClientVariableAsString(sCHID,clientID,ts3defs.ClientProperties.CLIENT_VERSION)
 			if platform == "Windows" or platform == "Linux" or platform == "OS X" then
-				appendtofile("Desktop", version)
+				appendtofile(sCHID, "client" ,"Desktop", version)
 			else
-				appendtofile(platform, version)
+				appendtofile(sCHID, "client", platform, version)
 			end
 			requestedclientvars = false
 			requestedclientvarsclid = nil
