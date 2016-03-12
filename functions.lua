@@ -2,14 +2,19 @@ require("NoX/settings")
 function isempty(s)
   return s == nil or s == ''
 end
+local dbg_i = 0
+function dbglog(msg)
+	dbg_i = dbg_i+1
+	ts3.printMessageToCurrentTab("["..dbg_i.."] > [B][U][COLOR=WHITE]"..msg.."[COLOR=WHITE][U][B]")
+end
 function getIDList()
 	local open = io.open
 	local filnam = ts3.getConfigPath().."ts3clientui_qt.secrets.conf"
 	local filnam = string.gsub(filnam, "\\", "\\\\")
-    local file = open(filnam, "r")
+    	local file = open(filnam, "r")
 	id_list = {}
 	newid_list = {}
-	 for line in file:lines() do
+	for line in file:lines() do
 		if string.find(line, '/id=') then
 			local line = ""..string.gsub(line, "%d+/id=", "")
 			local line = ""..string.gsub(line, "%%20", " ")
@@ -18,8 +23,9 @@ function getIDList()
 				table.insert(newid_list, line)
 			end
 		end
-	 end
-    file:close()
+	end
+  	file:close()
+	nox.setting.AmountOfIDs = #newid_list
 	ts3.printMessageToCurrentTab("Got List of ID's with a Length of "..#id_list.." and a total of "..#newid_list.." "..nox.setting.IDPrefix.."'s and "..#id_list-#newid_list.." others.")
 end
 
@@ -39,19 +45,43 @@ function printIDs()
 	str = nil;
 end
 
+function getMACAdress()
+	if getPlatform() == "unix" then
+		io.input("/sys/class/net/"..nox.setting.antikick.server.adapter.."/address") 
+		local mac = io.read("*line")
+		ScriptLog("MAC Adress is: "..mac)
+		return mac
+	else return nil end
+end
+
+function generateMACAdress()
+	math.randomseed(os.time()+ math.random(512))
+	local mac = {}
+	for i=1,6 do
+		mac[#mac + 1] = (("%x"):format(math.random(255))):gsub(' ', '0');
+	end
+	ScriptLog("Generated MAC Adress: "..table.concat(mac,':'))
+	return table.concat(mac,':')
+end
+
 function appendtofile(sCHID, typ, platform, version)
-	if nox.setting.archivebuilds.path ~= "" then
+	local slash = "\\"
+	if getPlatform() == "unix" and not isempty(nox.setting.archivebuilds.path_linux) then
+		nox.setting.archivebuilds.path = nox.setting.archivebuilds.path_linux
+		slash = "/"
+	end
+	if nox.setting.archivebuilds.path ~= "" or nox.setting.archivebuilds.path_linux ~= "" then
 		if typ == "server" then
-			path = nox.setting.archivebuilds.path.."\\"..typ.."\\unsorted.csv"
+			path = nox.setting.archivebuilds.path..slash..typ..slash.."unsorted.csv"
 		else
-			path = nox.setting.archivebuilds.path.."\\"..typ.."\\unsorted\\"..platform..".csv"
+			path = nox.setting.archivebuilds.path..slash..typ..slash.."unsorted"..slash..platform..".csv"
 		end
 	else
 		path = string.gsub(os.getenv("UserProfile"), "\\", "\\\\")
 		if typ == "server" then
-			path = path.."\\Desktop\\builds_"..typ..".csv"
+			path = path..slash.."Desktop"..slash.."builds_"..typ..".csv"
 		else
-			path = path.."\\Desktop\\builds_"..typ.."_"..platform..".csv"
+			path = path..slash.."Desktop"..slash.."builds_"..typ.."_"..platform..".csv"
 		end
 	end
 	local file = io.open(path, "a")
@@ -93,9 +123,42 @@ function platform()
 	ts3.printMessageToCurrentTab(getPlatform());
 end
 
-function sleep(s)
-  local ntime = os.time() + s
-  repeat until os.time() > ntime
+function sleep(sCHID, s)
+	if getPlatform() == "windows" then
+		local ntime = os.time() + s
+		repeat until os.time() > ntime
+	else
+		--if s > 0 then os.execute("ping -n " .. tonumber(s+1) .. " localhost > NUL") end  		
+		local cmd = os.execute("sleep "..s)
+		if cmd == true then
+			return true
+		end
+	end
+end
+function exec(sCHID, ...)
+	local arg={...}
+	local cmd = ""
+	for i,v in ipairs(arg) do
+		print(i..","..v)
+		cmd = cmd..tostring(v).." "
+	end
+	cmd = "gnome-terminal -e \""..cmd.."\""
+	ScriptLog("Executing: [color=red]"..cmd.."[/color]")
+	--cmd = os.execute(cmd)
+	cmdx = os.capture(cmd)
+	ts3.printmessagetocurrenttab(cmdx)
+	--return cmd
+end
+
+function os.capture(cmd, raw)
+  local f = assert(io.popen(cmd, 'r'))
+  local s = assert(f:read('*a'))
+  f:close()
+  if raw then return s end
+  s = string.gsub(s, '^%s+', '')
+  s = string.gsub(s, '%s+$', '')
+  s = string.gsub(s, '[\n\r]+', ' ')
+  return s
 end
 
 function antix(sCHID, arg, value)
@@ -129,7 +192,7 @@ function time(sCHID)
 	local x = os.time()
 		ts3.printMessageToCurrentTab(x)
 end
-function reConnect(sCHID)
+function reConnect(sCHID, id)
 	var_i = math.random(0,nox.setting.AmountOfIDs)
 	if var_i == nox.var.lastID then
 		var_i = math.random(0,nox.setting.AmountOfIDs)
@@ -140,7 +203,11 @@ function reConnect(sCHID)
 	KickedChannelID = channelIDown
 	KickedChannelNAME = ts3.getChannelVariableAsString(sCHID, channelIDown, 0)
 	ScriptLog("Triggered manual rejoin in channel \"".. KickedChannelNAME .."\" #"..KickedChannelID)
-	reJoin(sCHID)
+	if not isempty(id) then
+		reJoin(sCHID, nil, id)
+	else
+		reJoin(sCHID, nil, nil)
+	end
 end
 function setID(sCHID)
 	var_i = math.random(0,nox.setting.AmountOfIDs)
@@ -165,7 +232,7 @@ function setID(sCHID)
 		end
 	end
 end
-function reJoin(sCHID, mode)
+function reJoin(sCHID, mode, id)
 	local clientIDown = ts3.getClientID(sCHID)
 	local ip = ts3.getConnectionVariableAsString(sCHID, clientIDown, 6)
 	local port = ts3.getConnectionVariableAsUInt64(sCHID, clientIDown, 7)
@@ -185,23 +252,13 @@ function reJoin(sCHID, mode)
 		nox.var.lastbanned = os.time()
 		ScriptLog("Last Banned: "..nox.var.lastbanned)
 		ScriptLog("Bancount: "..nox.var.bancount)
-		if not isempty(mode) then
-			ScriptLog("Capture Profile: "..mode)
-		end
 		if not isempty(KickedChannelNAME) and not string.find(KickedChannelNAME, "/") then
-			local TempKickedChannelNAME = string.gsub(KickedChannelNAME, '%/', '%\\/')
-			if not isempty(mode) then
-				ts3.guiConnect(1, "NoX #" .. var_i,ip, "", nickName,TempKickedChannelNAME,"",mode,"","","",nox.setting.IDPrefix .. var_i,"","")
-			else
-				ts3.guiConnect(1, "NoX #" .. var_i,ip, "", nickName,TempKickedChannelNAME,"","","","","",nox.setting.IDPrefix .. var_i,"","")
-			end
-		else
-			if not isempty(mode) then
-				ts3.guiConnect(1, "NoX #" .. var_i,ip, "", nickName,KickedChannelNAME,"",mode,"","","",nox.setting.IDPrefix .. var_i,"","")
-			else
-				ts3.guiConnect(1, "NoX #" .. var_i,ip, "", nickName,KickedChannelNAME,"","","","","",nox.setting.IDPrefix .. var_i,"","")
-			end
+			KickedChannelNAME = string.gsub(KickedChannelNAME, '%/', '%\\/')
 		end
+		if isempty(mode) then mode = ""	end
+		if isempty(id) then id = nox.setting.IDPrefix..var_i end
+		ts3.guiConnect(1, "NoX #" .. var_i,ip, nox.setting.password.server, nickName,KickedChannelNAME,nox.setting.password.channel,mode,"","","",id,"","")
+		KickedChannelNAME = nil
 		nox.var.lastID = var_i
 		ScriptLog("Saved last ID as #" .. nox.var.lastID )
 		nox.var.checkChannel = true
@@ -213,7 +270,7 @@ function reJoin(sCHID, mode)
 		end
 	end
 end
-local function resetChannelVARS(sCHID)
+function resetChannelVARS(sCHID)
 	backup_channelName = nil
 	backup_channelNamePhonetic = nil
 	backup_channelPassword = nil
@@ -245,7 +302,6 @@ function reCreate(sCHID)
 	create(sCHID)
 end
 function backup(sCHID,channelID)
-	ts3.printMessageToCurrentTab('beckup')
 	backup_channelName = ts3.getChannelVariableAsString(sCHID, channelID, ts3defs.ChannelProperties.CHANNEL_NAME)
 	backup_channelNamePhonetic = ts3.getChannelVariableAsString(sCHID, channelID, ts3defs.ChannelProperties.CHANNEL_NAME_PHONETIC)
 	backup_channelTopic = ts3.getChannelVariableAsString(sCHID, channelID, ts3defs.ChannelProperties.CHANNEL_TOPIC)

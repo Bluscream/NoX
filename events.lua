@@ -39,8 +39,6 @@ function onClientKickFromChannelEvent(sCHID, clientID, oldChannelID, newChannelI
 		end
 		if nox.var.checkForKick == true then
 			local clientIDown = ts3.getClientID(sCHID)
-			-- ScriptLog(oldChannelID .. " " .. KickedChannelID)
-			-- ScriptLog(clientID .. " " .. clientIDown)
 			if oldChannelID == KickedChannelID and clientID == clientIDown then
 				if isempty(nox.setting.capture_profile) then
 					reJoin(sCHID)
@@ -75,27 +73,40 @@ function onClientKickFromServerEvent(sCHID, clientID, oldChannelID, newChannelID
 	end
 end
 function onClientBanFromServerEvent(sCHID, clientID, oldChannelID, newChannelID, visibility, kickerID, kickerName, kickerUniqueIdentifier, kickTime, kickMessage)
-	if nox.setting.active and nox.setting.antiban.server.enabled then
+	if nox.setting.active and nox.setting.antiban.server then
 		if clientID == nox.var.backup.clid then
-			os.execute(nox.setting.script)
-			sleep(nox.setting.scripttime)
-			if not isempty(nox.var.backup.channelname) and not string.find(nox.var.backup.channelname, "/") then
-				local channelname = string.gsub(nox.var.backup.channelname, '%/', '%\\/')
-				ScriptLog("Re-Connecting to "..nox.var.backup.ip.." as "..nox.var.backup.nickname.." in "..channelname)
-				ts3.guiConnect(1, "NoX AntiKick",nox.var.backup.ip, "", nox.var.backup.nickname,channelname,"","","","","","","","")
-				nox.var.checkChannel_server = true
+			local execuuute_script = ""
+			if getPlatform() == "windows" then
+				execuuute_script = nox.setting.script.windows
 			else
-				ScriptLog("Re-Connecting to "..nox.var.backup.ip.." as "..nox.var.backup.nickname.." in "..nox.var.backup.channelname)
-				ts3.guiConnect(1, "NoX AntiKick",nox.var.backup.ip, "", nox.var.backup.nickname,nox.var.backup.channelname,"","","","","","","","")
-				nox.var.checkChannel_server = true
+				os.execute("sudo ifconfig "..nox.setting.antikick.server.adapter.." down")
+				oldMAC = getMACAdress();newMAC = generateMACAdress()
+				os.execute("sudo ifconfig "..nox.setting.antikick.server.adapter.." hw ether  "..newMAC)
+				os.execute("sudo ifconfig "..nox.setting.antikick.server.adapter.." up")
+				ts3.printMessageToCurrentTab("Changed MAC Adress to: "..getMACAdress())
+				execuuute_script = nox.setting.antikick.server.script.linux
 			end
+			execuuute = os.execute(execuuute_script)
+			if execuuute == true then print("1") end
+			slep = sleep(sCHID, nox.setting.scriptbonustime)
+			if slep == true then print("1") end
+				dbglog("true, bitch")
+				if not isempty(nox.var.backup.channelname) and not string.find(nox.var.backup.channelname, "/") then
+					local channelname = string.gsub(nox.var.backup.channelname, '%/', '%\\/')
+					ScriptLog("Re-Connecting to "..nox.var.backup.ip.." as "..nox.var.backup.nickname.." in "..channelname)
+					ts3.guiConnect(1, "NoX AntiKick",nox.var.backup.ip, "", nox.var.backup.nickname,channelname,"","","","","","","","")
+					nox.var.checkChannel_server = true
+				else
+					ScriptLog("Re-Connecting to "..nox.var.backup.ip.." as "..nox.var.backup.nickname.." in "..nox.var.backup.channelname)
+					ts3.guiConnect(1, "NoX AntiKick",nox.var.backup.ip, "", nox.var.backup.nickname,nox.var.backup.channelname,"","","","","","","","")
+					nox.var.checkChannel_server = true
+				end
 		end
 	end
 end
 function onServerErrorEvent(sCHID, errorMessage, errorCode, extraMessage)
 	if nox.setting.active and nox.setting.antiban.server then
 		if errorMessage == "connection failed, you are banned" or errorCode == 3329 then
-			-- os.execute(nox.setting.script)
 			if not isempty(nox.var.backup.channelname) and not string.find(nox.var.backup.channelname, "/") then
 				local channelname = string.gsub(nox.var.backup.channelname, '%/', '%\\/')
 				ScriptLog("Re-Connecting to "..nox.var.backup.ip.." as "..nox.var.backup.nickname.." in "..channelname)
@@ -122,7 +133,6 @@ function onClientSelfVariableUpdateEvent(sCHID, flag, oldValue, newValue)
 		if nox.setting.antikick.server.enabled or nox.setting.antiban.server then
 			if flag == 1 then
 				nox.var.backup.nickname = newValue
-				-- ScriptLog("Backed Up: "..nox.var.backup.nickname)
 			end
 		end
 	end
@@ -222,7 +232,6 @@ function onClientMoveEvent(sCHID, clientID, oldChannelID, newChannelID, visibili
 		if clientID == ts3.getClientID(sCHID) then
 			resetChannelVARS(sCHID)
 			backup(sCHID, newChannelID)
-			ScriptLog("Backed up "..backup_channelName.." for antidelete.")
 		end
 	end
 end
