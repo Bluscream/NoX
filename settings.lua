@@ -9,16 +9,16 @@ nox = {
 	},
 	setting = { -- Edit below this line! --
 		active = true, -- Enable the script.
-		debug = true, -- The script show debug messages.
+		debug = false, -- The script show debug messages.
 		archivebuilds = {
-			enabled = true, -- Will create files that contain all client versions that you have ever seen.
+			enabled = false, -- Will create files that contain all client versions that you have ever seen.
 			path = "D:\\Coding\\Projekte\\Teamspeak-Plugins\\builds",
 		},
 		password = {
 			server = "123",
 			channel = "123",
 		},
-		ownchat = true, -- Opens a chat with yourself as notepad.
+		ownchat = false, -- Opens a chat with yourself as notepad.
 		failsave = false, -- If the antichannelban is not working as intended set this to true and try again.
 		slowmode = true, -- If this is enabled the script will not instantly reconnect when you get a channel ban group, only after you also got kicked. (Enable only this or auto_slowmode)
 		capture_profile = "", -- You can reconnect with a non-default Capture Profile when channel banned, usefull for screaming.
@@ -52,18 +52,6 @@ nox = {
 		antiban = {
 			channel = {
 				enabled = true, -- Auto rejoin when you get banned from a channel.
-				server = {
-					GommeHD = {
-						UID = "FI9+KF1c/BKx5dlFejAs8OJpnO0=",
-						BadChannelGroups = { 12, 13 },
-						BadServerGroups = { 13, 14 },
-					},
-					mtG = {
-						UID = "LpfWDi8tO9blye3wZXZZ76uPAM8=",
-						BadChannelGroups = { 12, 13 },
-						BadServerGroups = { 13, 12 },
-					},
-				},
 			},
 			server = true, -- Auto reconnect when you get banned from a server.
 		},
