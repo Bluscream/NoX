@@ -1,6 +1,27 @@
 require("NoX/settings")
 function isempty(s)
-  return s == nil or s == ''
+  return s == nil or s == '' or s == {}
+end
+function antix(sCHID, arg, value)
+	if not isempty(arg) then
+		arg = string.lower(arg)
+	end
+	
+	if not isempty(value) then
+		value = string.lower(value)
+	end
+
+	if arg == "bc" then
+		if isempty(value) then
+			ts3.printMessageToCurrentTab("NoX: Ban count = "..nox.var.bancount)
+		elseif value == "reset" then
+			ts3.printMessageToCurrentTab("NoX: Resetted ban count")
+			nox.var.bancount = 0
+		else
+			ts3.printMessageToCurrentTab("NoX: Setting ban count from "..nox.var.bancount.." to "..value)
+			nox.var.bancount = value
+		end
+	end
 end
 function getIDList()
 	local open = io.open
@@ -89,8 +110,16 @@ function getPlatform()
 	end
 end
 
-function platform()
-	ts3.printMessageToCurrentTab(getPlatform());
+function str_split(inputstr, sep)
+        if sep == nil then
+                sep = "%s"
+        end
+        local t={} ; i=1
+        for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+                t[i] = str
+                i = i + 1
+        end
+        return t
 end
 
 function sleep(s)
@@ -98,37 +127,6 @@ function sleep(s)
   repeat until os.time() > ntime
 end
 
-function antix(sCHID, arg, value)
-	if not isempty(arg) then
-		arg = string.lower(arg)
-	end
-	
-	if not isempty(value) then
-		value = string.lower(value)
-	end
-
-	if arg == "bc" then
-		if isempty(value) then
-			ts3.printMessageToCurrentTab("NoX: Ban count = "..nox.var.bancount)
-		elseif value == "reset" then
-			ts3.printMessageToCurrentTab("NoX: Resetted ban count")
-			nox.var.bancount = 0
-		else
-			ts3.printMessageToCurrentTab("NoX: Setting ban count from "..nox.var.bancount.." to "..value)
-			nox.var.bancount = value
-		end
-	end
-end
-
-
-function clock(sCHID)
-	local x = os.clock()
-		ts3.printMessageToCurrentTab(x)
-end
-function time(sCHID)
-	local x = os.time()
-		ts3.printMessageToCurrentTab(x)
-end
 function reConnect(sCHID)
 	var_i = math.random(0,nox.setting.AmountOfIDs)
 	if var_i == nox.var.lastID then

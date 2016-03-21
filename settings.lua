@@ -28,11 +28,14 @@ nox = {
 		use_all_ids = false, -- If true, uses all IDs that you have, even your default one. If false, only the ones starting with "IDPrefix" will be used.
 		BanGroups = { 12, 16, 11 }, -- Channel Group ID's that should be detected as "Channel-Ban" groups.
 		SpamGroups = { 13, 14 }, -- Channel Group ID's that should be detected as "Channel-Anti-Spam" groups.
+		antiservergroup = true,
+		BadServerGroups = { 76, 66, 67, 68, 192, 193, 73 },
 		antimove = {
-			enabled = false, -- Auto switch back when moved.
+			enabled = true, -- Auto switch back when moved.
 			filter = {
 				enabled = true,
 				uids = { 'serveradmin', 'serverquery' },
+				allowedservergroups = { 64, 65, 194 },
 			},
 		},
 		antidelete = {

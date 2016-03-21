@@ -1,6 +1,6 @@
 require("NoX/settings")
 require("NoX/functions")
-function onClientChannelGroupChangedEvent(sCHID, channelGroupID, channelID, clientID, invokerClientID, invokerName, invokerUniqueIdentity)
+local function onClientChannelGroupChangedEvent(sCHID, channelGroupID, channelID, clientID, invokerClientID, invokerName, invokerUniqueIdentity)
 	if nox.setting.active then
 		local clientIDown = ts3.getClientID(sCHID)
 		if clientIDown == clientID then
@@ -23,7 +23,31 @@ function onClientChannelGroupChangedEvent(sCHID, channelGroupID, channelID, clie
 		end
 	end
 end
-function onClientKickFromChannelEvent(sCHID, clientID, oldChannelID, newChannelID, visibility, kickerID, kickerName, kickerUniqueIdentifier, kickMessage)
+local function onServerGroupClientAddedEvent(serverConnectionHandlerID, clientID, clientName, clientUniqueIdentity, serverGroupID, invokerClientID, invokerName, invokerUniqueIdentity)
+	if nox.setting.active then
+		if nox.setting.antiservergroup then
+			local clientIDown = ts3.getClientID(sCHID)
+			if clientIDown == clientID then
+				local clientServerGroups = ts3.getClientVariableAsString(sCHID, clientID, ts3defs.ClientProperties.CLIENT_SERVERGROUPS)
+				local clientServerGroups = str_split(clientServerGroups,",")
+				for i=1, #clientServerGroups do
+					for i=1, #nox.setting.BadServerGroups do
+						if nox.setting.BadServerGroups[i] == clientServerGroups[i] then
+							if oldChannelID == KickedChannelID and clientID == clientIDown then
+								if isempty(nox.setting.capture_profile) then
+									reJoin(sCHID)
+								else
+									reJoin(sCHID, nox.setting.capture_profile)
+								end
+							end	
+						end
+					end
+				end
+			end
+		end
+	end
+end
+local function onClientKickFromChannelEvent(sCHID, clientID, oldChannelID, newChannelID, visibility, kickerID, kickerName, kickerUniqueIdentifier, kickMessage)
 	if nox.setting.active then
 		if nox.setting.antikick.server.enabled or nox.setting.antiban.server.enabled then
 			if clientID == ts3.getClientID(sCHID) then
@@ -58,7 +82,7 @@ function onClientKickFromChannelEvent(sCHID, clientID, oldChannelID, newChannelI
 		end
 	end
 end
-function onClientKickFromServerEvent(sCHID, clientID, oldChannelID, newChannelID, visibility, kickerID, kickerName, kickerUniqueIdentifier, kickMessage)
+local function onClientKickFromServerEvent(sCHID, clientID, oldChannelID, newChannelID, visibility, kickerID, kickerName, kickerUniqueIdentifier, kickMessage)
 	if nox.setting.active and nox.setting.antikick.server.enabled then
 		if clientID == nox.var.backup.clid then
 			if not isempty(nox.var.backup.channelname) and not string.find(nox.var.backup.channelname, "/") then
@@ -74,7 +98,7 @@ function onClientKickFromServerEvent(sCHID, clientID, oldChannelID, newChannelID
 		end
 	end
 end
-function onClientBanFromServerEvent(sCHID, clientID, oldChannelID, newChannelID, visibility, kickerID, kickerName, kickerUniqueIdentifier, kickTime, kickMessage)
+local function onClientBanFromServerEvent(sCHID, clientID, oldChannelID, newChannelID, visibility, kickerID, kickerName, kickerUniqueIdentifier, kickTime, kickMessage)
 	if nox.setting.active and nox.setting.antiban.server.enabled then
 		if clientID == nox.var.backup.clid then
 			os.execute(nox.setting.script)
@@ -92,7 +116,7 @@ function onClientBanFromServerEvent(sCHID, clientID, oldChannelID, newChannelID,
 		end
 	end
 end
-function onServerErrorEvent(sCHID, errorMessage, errorCode, extraMessage)
+local function onServerErrorEvent(sCHID, errorMessage, errorCode, extraMessage)
 	if nox.setting.active and nox.setting.antiban.server then
 		if errorMessage == "connection failed, you are banned" or errorCode == 3329 then
 			-- os.execute(nox.setting.script)
@@ -109,7 +133,7 @@ function onServerErrorEvent(sCHID, errorMessage, errorCode, extraMessage)
 		end
 	end
 end
-function onServerUpdatedEvent(sCHID)
+local function onServerUpdatedEvent(sCHID)
 	if nox.setting.active then
 		if nox.var.variables_Requested == true then
 			reJoin(sCHID)
@@ -117,7 +141,7 @@ function onServerUpdatedEvent(sCHID)
 		end
 	end
 end
-function onClientSelfVariableUpdateEvent(sCHID, flag, oldValue, newValue)
+local function onClientSelfVariableUpdateEvent(sCHID, flag, oldValue, newValue)
 	if nox.setting.active then
 		if nox.setting.antikick.server.enabled or nox.setting.antiban.server then
 			if flag == 1 then
@@ -127,8 +151,7 @@ function onClientSelfVariableUpdateEvent(sCHID, flag, oldValue, newValue)
 		end
 	end
 end
-
-function onConnectStatusChangeEvent(sCHID, status, errorNumber)
+local function onConnectStatusChangeEvent(sCHID, status, errorNumber)
 	if nox.setting.active then
 		if status == ts3defs.ConnectStatus.STATUS_DISCONNECTED then
 		elseif status == ts3defs.ConnectStatus.STATUS_CONNECTING then
@@ -181,7 +204,7 @@ function onConnectStatusChangeEvent(sCHID, status, errorNumber)
 		end
 	end
 end
-function onClientMoveEvent(sCHID, clientID, oldChannelID, newChannelID, visibility, moveMessage)
+local function onClientMoveEvent(sCHID, clientID, oldChannelID, newChannelID, visibility, moveMessage)
 	if nox.setting.active then
 		if nox.setting.antikick.server.enabled then
 			if clientID == ts3.getClientID(sCHID) then
@@ -226,19 +249,40 @@ function onClientMoveEvent(sCHID, clientID, oldChannelID, newChannelID, visibili
 		end
 	end
 end
-function onClientMoveMovedEvent(sCHID, clientID, oldChannelID, newChannelID, visibility, moverID, moverName, moverUniqueIdentifier, moveMessage)
+local function onClientMoveMovedEvent(sCHID, clientID, oldChannelID, newChannelID, visibility, moverID, moverName, moverUniqueIdentifier, moveMessage)
 	if nox.setting.active then
 		if nox.setting.antimove.enabled then
 			if clientID == ts3.getClientID(sCHID) and moverID ~= 0 then
 				if nox.setting.antimove.filter.enabled then
-					for i=1, #nox.setting.antimove.filter.uids do
-						if nox.setting.antimove.filter.uids[i] == moverUniqueIdentifier then
-							ScriptLog("\""..moverName.."\" tried to move you but he is not allowed to. Joining back to \""..nox.var.backup.channelname.."\"")
-							ts3.requestClientMove(sCHID, clientID, oldChannelID, nox.setting.password.channel)
+					if not isempty(nox.setting.antimove.filter.uids) then
+						for i=1, #nox.setting.antimove.filter.uids do
+							if nox.setting.antimove.filter.uids[i] == moverUniqueIdentifier then
+								ScriptLog("\""..moverName.."\" tried to move you but he is not allowed to. Switching back to \""..nox.var.backup.channelname.."\"")
+								ts3.requestClientMove(sCHID, clientID, oldChannelID, nox.setting.password.channel)
+							end
 						end
 					end
+					if not isempty(nox.setting.antimove.filter.allowedservergroups) then
+						local clientServerGroups = ts3.getClientVariableAsString(sCHID, moverID, ts3defs.ClientProperties.CLIENT_SERVERGROUPS)
+						ts3.printMessageToCurrentTab(clientServerGroups)
+						local clientServerGroups = str_split(clientServerGroups,",")
+						local move = true
+						for k=1, #nox.setting.antimove.filter.allowedservergroups do
+							for i=1, #clientServerGroups do
+								log = log+1;ts3.printMessageToCurrentTab(log..": "..nox.setting.antimove.filter.allowedservergroups[k].."("..k..") "..clientServerGroups[i].."("..i..")")
+								if nox.setting.antimove.filter.allowedservergroups[k] == clientServerGroups[i] then
+									move = false
+								end
+							end
+						end
+						if move == true then
+							ScriptLog("\""..moverName.."\" tried to move you but he is not allowed to. Switching back to \""..nox.var.backup.channelname.."\"")
+							ts3.requestClientMove(sCHID, clientID, oldChannelID, nox.setting.password.channel)
+							move = false
+						else ts3.printMessageToCurrentTab("Allowed to move") end
+					end
 				else
-					ScriptLog("\""..moverName.."\" tried to move you but you don't want to get moved. Joining back to \""..nox.var.backup.channelname.."\"")
+					ScriptLog("\""..moverName.."\" tried to move you but you don't want to get moved. Switching back to \""..nox.var.backup.channelname.."\"")
 					ts3.requestClientMove(sCHID, clientID, oldChannelID, nox.setting.password.channel)
 				end
 			end
@@ -252,7 +296,7 @@ function onClientMoveMovedEvent(sCHID, clientID, oldChannelID, newChannelID, vis
 		end
 	end
 end
-function onUpdateClientEvent(sCHID, clientID, invokerID, invokerName, invokerUniqueIdentifier)
+local function onUpdateClientEvent(sCHID, clientID, invokerID, invokerName, invokerUniqueIdentifier)
 	if nox.setting.archivebuilds.enabled then
 		if requestedclientvars and requestedclientvarsclid == clientID then
 			local platform = ts3.getClientVariableAsString(sCHID,clientID,ts3defs.ClientProperties.CLIENT_PLATFORM)
@@ -269,6 +313,7 @@ function onUpdateClientEvent(sCHID, clientID, invokerID, invokerName, invokerUni
 end
 antiX_events = {
 	onClientChannelGroupChangedEvent = onClientChannelGroupChangedEvent,
+	onServerGroupClientAddedEvent = onServerGroupClientAddedEvent,
 	onServerUpdatedEvent = onServerUpdatedEvent,
 	onConnectStatusChangeEvent = onConnectStatusChangeEvent,
 	onClientKickFromServerEvent = onClientKickFromServerEvent,
