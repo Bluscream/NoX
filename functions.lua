@@ -96,6 +96,25 @@ function appendtofile(sCHID, typ, platform, version)
 	path = nil
 end
 
+function getMACAdress()
+	if getPlatform() == "unix" then
+		io.input("/sys/class/net/"..nox.setting.antikick.server.adapter.."/address") 
+		local mac = io.read("*line")
+		ScriptLog("MAC Adress is: "..mac)
+		return mac
+	else return nil end
+end
+
+function generateMACAdress()
+	math.randomseed(os.time()+ math.random(512))
+	local mac = {}
+	for i=1,6 do
+		mac[#mac + 1] = (("%x"):format(math.random(255))):gsub(' ', '0');
+	end
+	ScriptLog("Generated MAC Adress: "..table.concat(mac,':'))
+	return table.concat(mac,':')
+end
+
 function getPlatform()
 	if os.getenv("APPDATA") then
 		if os.getenv("HOME") then
@@ -122,9 +141,42 @@ function str_split(inputstr, sep)
         return t
 end
 
-function sleep(s)
-  local ntime = os.time() + s
-  repeat until os.time() > ntime
+function sleep(sCHID, s)
+	if getPlatform() == "windows" then
+		local ntime = os.time() + s
+		repeat until os.time() > ntime
+	else
+		--if s > 0 then os.execute("ping -n " .. tonumber(s+1) .. " localhost > NUL") end  		
+		local cmd = os.execute("sleep "..s)
+		if cmd == true then
+			return true
+		end
+	end
+end
+function exec(sCHID, ...)
+	local arg={...}
+	local cmd = ""
+	for i,v in ipairs(arg) do
+		print(i..","..v)
+		cmd = cmd..tostring(v).." "
+	end
+	cmd = "gnome-terminal -e \""..cmd.."\""
+	ScriptLog("Executing: [color=red]"..cmd.."[/color]")
+	--cmd = os.execute(cmd)
+	cmdx = os.capture(cmd)
+	ts3.printmessagetocurrenttab(cmdx)
+	--return cmd
+end
+
+function os.capture(cmd, raw)
+  local f = assert(io.popen(cmd, 'r'))
+  local s = assert(f:read('*a'))
+  f:close()
+  if raw then return s end
+  s = string.gsub(s, '^%s+', '')
+  s = string.gsub(s, '%s+$', '')
+  s = string.gsub(s, '[\n\r]+', ' ')
+  return s
 end
 
 function reConnect(sCHID)

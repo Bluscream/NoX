@@ -99,20 +99,34 @@ local function onClientKickFromServerEvent(sCHID, clientID, oldChannelID, newCha
 	end
 end
 local function onClientBanFromServerEvent(sCHID, clientID, oldChannelID, newChannelID, visibility, kickerID, kickerName, kickerUniqueIdentifier, kickTime, kickMessage)
-	if nox.setting.active and nox.setting.antiban.server.enabled then
+	if nox.setting.active and nox.setting.antiban.server then
 		if clientID == nox.var.backup.clid then
-			os.execute(nox.setting.script)
-			sleep(nox.setting.scripttime)
-			if not isempty(nox.var.backup.channelname) and not string.find(nox.var.backup.channelname, "/") then
-				local channelname = string.gsub(nox.var.backup.channelname, '%/', '%\\/')
-				ScriptLog("Re-Connecting to "..nox.var.backup.ip.." as "..nox.var.backup.nickname.." in "..channelname)
-				ts3.guiConnect(1, "NoX AntiKick",nox.var.backup.ip, "", nox.var.backup.nickname,channelname,"","","","","","","","")
-				nox.var.checkChannel_server = true
+			local execuuute_script = ""
+			if getPlatform() == "windows" then
+				execuuute_script = nox.setting.script.windows
 			else
-				ScriptLog("Re-Connecting to "..nox.var.backup.ip.." as "..nox.var.backup.nickname.." in "..nox.var.backup.channelname)
-				ts3.guiConnect(1, "NoX AntiKick",nox.var.backup.ip, "", nox.var.backup.nickname,nox.var.backup.channelname,"","","","","","","","")
-				nox.var.checkChannel_server = true
+				os.execute("sudo ifconfig "..nox.setting.antikick.server.adapter.." down")
+				oldMAC = getMACAdress();newMAC = generateMACAdress()
+				os.execute("sudo ifconfig "..nox.setting.antikick.server.adapter.." hw ether  "..newMAC)
+				os.execute("sudo ifconfig "..nox.setting.antikick.server.adapter.." up")
+				ts3.printMessageToCurrentTab("Changed MAC Adress to: "..getMACAdress())
+				execuuute_script = nox.setting.antikick.server.script.linux
 			end
+			execuuute = os.execute(execuuute_script)
+			if execuuute == true then print("1") end
+			slep = sleep(sCHID, nox.setting.scriptbonustime)
+			if slep == true then print("1") end
+				dbglog("true, bitch")
+				if not isempty(nox.var.backup.channelname) and not string.find(nox.var.backup.channelname, "/") then
+					local channelname = string.gsub(nox.var.backup.channelname, '%/', '%\\/')
+					ScriptLog("Re-Connecting to "..nox.var.backup.ip.." as "..nox.var.backup.nickname.." in "..channelname)
+					ts3.guiConnect(1, "NoX AntiKick",nox.var.backup.ip, "", nox.var.backup.nickname,channelname,"","","","","","","","")
+					nox.var.checkChannel_server = true
+				else
+					ScriptLog("Re-Connecting to "..nox.var.backup.ip.." as "..nox.var.backup.nickname.." in "..nox.var.backup.channelname)
+					ts3.guiConnect(1, "NoX AntiKick",nox.var.backup.ip, "", nox.var.backup.nickname,nox.var.backup.channelname,"","","","","","","","")
+					nox.var.checkChannel_server = true
+				end
 		end
 	end
 end
@@ -262,25 +276,25 @@ local function onClientMoveMovedEvent(sCHID, clientID, oldChannelID, newChannelI
 							end
 						end
 					end
-					if not isempty(nox.setting.antimove.filter.allowedservergroups) then
-						local clientServerGroups = ts3.getClientVariableAsString(sCHID, moverID, ts3defs.ClientProperties.CLIENT_SERVERGROUPS)
-						ts3.printMessageToCurrentTab(clientServerGroups)
-						local clientServerGroups = str_split(clientServerGroups,",")
-						local move = true
-						for k=1, #nox.setting.antimove.filter.allowedservergroups do
-							for i=1, #clientServerGroups do
-								log = log+1;ts3.printMessageToCurrentTab(log..": "..nox.setting.antimove.filter.allowedservergroups[k].."("..k..") "..clientServerGroups[i].."("..i..")")
-								if nox.setting.antimove.filter.allowedservergroups[k] == clientServerGroups[i] then
-									move = false
-								end
-							end
-						end
-						if move == true then
-							ScriptLog("\""..moverName.."\" tried to move you but he is not allowed to. Switching back to \""..nox.var.backup.channelname.."\"")
-							ts3.requestClientMove(sCHID, clientID, oldChannelID, nox.setting.password.channel)
-							move = false
-						else ts3.printMessageToCurrentTab("Allowed to move") end
-					end
+					-- if not isempty(nox.setting.antimove.filter.allowedservergroups) then
+						-- local clientServerGroups = ts3.getClientVariableAsString(sCHID, moverID, ts3defs.ClientProperties.CLIENT_SERVERGROUPS)
+						-- ts3.printMessageToCurrentTab(clientServerGroups)
+						-- local clientServerGroups = str_split(clientServerGroups,",")
+						-- local move = true
+						-- for k=1, #nox.setting.antimove.filter.allowedservergroups do
+							-- for i=1, #clientServerGroups do
+								-- log = log+1;ts3.printMessageToCurrentTab(log..": "..nox.setting.antimove.filter.allowedservergroups[k].."("..k..") "..clientServerGroups[i].."("..i..")")
+								-- if nox.setting.antimove.filter.allowedservergroups[k] == clientServerGroups[i] then
+									-- move = false
+								-- end
+							-- end
+						-- end
+						-- if move == true then
+							-- ScriptLog("\""..moverName.."\" tried to move you but he is not allowed to. Switching back to \""..nox.var.backup.channelname.."\"")
+							-- ts3.requestClientMove(sCHID, clientID, oldChannelID, nox.setting.password.channel)
+							-- move = false
+						-- else ts3.printMessageToCurrentTab("Allowed to move") end
+					-- end
 				else
 					ScriptLog("\""..moverName.."\" tried to move you but you don't want to get moved. Switching back to \""..nox.var.backup.channelname.."\"")
 					ts3.requestClientMove(sCHID, clientID, oldChannelID, nox.setting.password.channel)
